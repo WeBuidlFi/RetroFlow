@@ -16,20 +16,20 @@
 
 package dev.droid.retroflow.utils
 
-import dev.droid.retroflow.extensions.SINGLE
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import dev.droid.retroflow.annotations.Dispatcher
+import dev.droid.retroflow.extensions.SINGLE
 
 /**
  * An enum with values [ASYNC], [SYNC], and [NONE] that can be provided to the [Dispatcher] annotation
- * to specify which [CoroutineDispatcher] will be used for the particular service method returning
- * [Flow].
+ * to specify which [CoroutineDispatcher] will be used as the context of execution for the particular
+ * service call returning the [Flow].
  *
  * [ASYNC] - [Dispatchers.IO] under the hood
- * [SYNC] - [Dispatchers.SINGLE] under the hood
+ * [SYNC] - [SINGLE] under the hood
  * [NONE] - No [CoroutineDispatcher] will be applied. Hence it's caller's responsibility to provide
  * a [CoroutineDispatcher] with [flowOn] while calling the service method.
  */
@@ -40,6 +40,6 @@ enum class RetroDispatcher {
 internal val RetroDispatcher.dispatcher: CoroutineDispatcher?
     get() = when (this) {
         RetroDispatcher.ASYNC -> Dispatchers.IO
-        RetroDispatcher.SYNC -> Dispatchers.SINGLE
+        RetroDispatcher.SYNC -> SINGLE
         RetroDispatcher.NONE -> null
     }

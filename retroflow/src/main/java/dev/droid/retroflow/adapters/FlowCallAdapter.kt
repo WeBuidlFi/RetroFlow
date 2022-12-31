@@ -16,9 +16,12 @@
 
 package dev.droid.retroflow.adapters
 
+import dev.droid.retroflow.RetroFlow
+import dev.droid.retroflow.extensions.*
 import dev.droid.retroflow.extensions.dispatcher
+import dev.droid.retroflow.extensions.executeMock
 import dev.droid.retroflow.extensions.flowOn
-import dev.droid.retroflow.extensions.successBody
+import dev.droid.retroflow.mock.MockMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody
@@ -31,16 +34,25 @@ import java.lang.reflect.Type
 internal class FlowCallAdapter<T>(
     private val responseType: Type,
     private val annotations: Array<out Annotation>,
-    private val emptyBodyConverter: Converter<ResponseBody, T>
+    private val converter: Converter<ResponseBody, T>
 ): CallAdapter<T, Flow<T>> {
     override fun responseType(): Type = responseType
 
     override fun adapt(call: Call<T>): Flow<T> = flow {
         emit(
             try {
-                val response = call.execute()
+                val retroMock = annotations.mock()
+
+                val response = if (retroMock != null
+                                    && retroMock.mode != MockMode.NONE
+                                    && RetroFlow.isMockEnabled) {
+                    executeMock(retroMock, responseType)
+                } else {
+                    call.execute()
+                }
+
                 if (response.isSuccessful) {
-                    response.successBody(emptyBodyConverter)
+                    response.successBody(converter)
                 } else {
                     throw HttpException(response)
                 }

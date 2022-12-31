@@ -14,13 +14,17 @@
  *    limitations under the License.
  */
 
-package dev.droid.retroflow.extensions
+package dev.droid.retroflow.mock
 
-import dev.droid.retroflow.annotations.Dispatcher
 import dev.droid.retroflow.annotations.RetroMock
 
-internal fun Array<out Annotation>.dispatcher(): Dispatcher? =
-    firstOrNull { it is Dispatcher }?.let { it as Dispatcher }
-
-internal fun Array<out Annotation>.mock(): RetroMock? =
-    firstOrNull { it is RetroMock }?.let { it as RetroMock }
+/**
+ * Enum class to define the mode of mock in the [RetroMock] annotation.
+ *
+ * [SUCCESS]: To mock a successful response
+ * [ERROR]: To mock an error response
+ * [NONE]: Disable mock for the annotated method
+ */
+enum class MockMode {
+    SUCCESS, ERROR, NONE
+}

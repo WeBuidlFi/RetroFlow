@@ -16,35 +16,60 @@
 
 package dev.droid.retroflow
 
-import dev.droid.retroflow.utils.RetroDispatcher
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.AssetManager
+import android.content.res.Resources
+import dev.droid.retroflow.factory.RetroFlowCallAdapterFactory
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 
 /**
  * @author rkpattanaik (Rajesh Pattanaik)
  *
- * [RetroFlow] is the global configuration file to configure the
- * [dev.droid.retroflow.factory.RetroFlowCallAdapterFactory] for each service call.
+ * [RetroFlow] is the global configuration file to configure the [RetroFlowCallAdapterFactory].
  */
+@SuppressLint("StaticFieldLeak")
 object RetroFlow {
-    internal var dispatcher: CoroutineDispatcher? = IO
+    internal var dispatcher: CoroutineDispatcher? = Dispatchers.IO
+        private set
+    internal var isMockEnabled = false
+        private set
+    internal var context: Context? = null
         private set
 
     /**
-     * Set your own [CoroutineDispatcher] to be used for each service call. By default RetroFlow
-     * uses [RetroDispatcher.ASYNC] dispatcher which is nothing but the [IO] dispatcher under
-     * the hood.
-     * If you don't wish RetroFlow to launch the [Flow] on any dispatcher, then pass 'null' to
-     * [RetroFlow.dispatcher] function. Remember to apply [flowOn] when you are calling the service
-     * method returning the [Flow].
+     * Provide the context of [Flow] execution for all service calls. By default RetroFlow will use
+     * the [Dispatchers.IO] dispatcher.
+     * Provide 'null' if RetroFlow does not have to switch the context of execution. It's the
+     * responsibility of the caller to handle the context of [Flow] execution using the [flowOn]
+     * operator while making the service call. If the context of execution is not switched then
+     * the calls will be executed on the current thread which may lead to
+     * [android.os.NetworkOnMainThreadException] and crash the application.
      *
      * @param dispatcher: Your [CoroutineDispatcher] implementation
+     *
      * @return [RetroFlow]
      */
     fun dispatcher(dispatcher: CoroutineDispatcher?): RetroFlow {
         this.dispatcher = dispatcher
+        return this
+    }
+
+    /**
+     * Use this function to enable or disable mock mode.
+     *
+     * @param enable: [Boolean] value to enable/disable mock mode
+     * @param context: Android [Context] object. This is required to obtain the [AssetManager] or
+     * [Resources] for accessing 'assets' or 'res/raw' folders where the mock json files are stored.
+     *
+     * @return [RetroFlow]
+     */
+    fun mock(enable: Boolean, context: Context): RetroFlow {
+        isMockEnabled = enable
+        this.context = context
         return this
     }
 }

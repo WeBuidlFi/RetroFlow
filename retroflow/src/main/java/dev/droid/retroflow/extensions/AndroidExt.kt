@@ -16,11 +16,20 @@
 
 package dev.droid.retroflow.extensions
 
-import dev.droid.retroflow.annotations.Dispatcher
+import android.content.Context
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import dev.droid.retroflow.annotations.RetroMock
+import dev.droid.retroflow.mock.MockSource
 
-internal fun Array<out Annotation>.dispatcher(): Dispatcher? =
-    firstOrNull { it is Dispatcher }?.let { it as Dispatcher }
-
-internal fun Array<out Annotation>.mock(): RetroMock? =
-    firstOrNull { it is RetroMock }?.let { it as RetroMock }
+internal fun Context.readMockJson(retroMock: RetroMock): JsonObject {
+    val inputStream = if (retroMock.source == MockSource.ASSET) {
+        assets.open(retroMock.mockAssetPath)
+    } else {
+        resources.openRawResource(retroMock.mockResId)
+    }
+    val mockJsonString = inputStream.bufferedReader().use { it.readText() }
+    val mockJsonObject = JsonParser.parseString(mockJsonString).asJsonObject
+    inputStream.close()
+    return mockJsonObject
+}

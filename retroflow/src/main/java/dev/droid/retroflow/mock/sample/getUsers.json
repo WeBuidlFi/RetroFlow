@@ -1,0 +1,39 @@
+{
+  "success": {
+    "code": 200,
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      },
+      {
+        "name": "AccessToken",
+        "value": "xyz"
+      }
+    ],
+    "body": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "age": 29
+      },
+      {
+        "id": 2,
+        "name": "Rajesh Pattanaik",
+        "age": 31
+      }
+    ]
+  },
+  "error": {
+    "code": 400,
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "body": {
+      "error": "Something went wrong!"
+    }
+  }
+}

@@ -14,13 +14,17 @@
  *    limitations under the License.
  */
 
-package dev.droid.retroflow.extensions
+package dev.droid.retroflow.mock
 
-import dev.droid.retroflow.annotations.Dispatcher
 import dev.droid.retroflow.annotations.RetroMock
 
-internal fun Array<out Annotation>.dispatcher(): Dispatcher? =
-    firstOrNull { it is Dispatcher }?.let { it as Dispatcher }
-
-internal fun Array<out Annotation>.mock(): RetroMock? =
-    firstOrNull { it is RetroMock }?.let { it as RetroMock }
+/**
+ * Enum class to defile the source of the mock json file, while annotating the method
+ * with [RetroMock].
+ *
+ * [ASSET]: Assets folder as the source of the mock json file
+ * [RESOURCE]: res/raw directory as the source of the mock json file
+ */
+enum class MockSource {
+    ASSET, RESOURCE
+}

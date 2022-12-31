@@ -16,9 +16,12 @@
 
 package dev.droid.retroflow.adapters
 
-import dev.droid.retroflow.extensions.asResource
+import dev.droid.retroflow.RetroFlow
+import dev.droid.retroflow.extensions.*
 import dev.droid.retroflow.extensions.dispatcher
 import dev.droid.retroflow.extensions.flowOn
+import dev.droid.retroflow.extensions.mock
+import dev.droid.retroflow.mock.MockMode
 import dev.droid.retroflow.resource.Resource
 import dev.droid.retroflow.resource.ResourceFlow
 import kotlinx.coroutines.flow.flow
@@ -31,7 +34,7 @@ import java.lang.reflect.Type
 internal class ResourceFlowCallAdapter<S, E>(
     private val successType: Type,
     private val annotations: Array<out Annotation>,
-    private val emptyBodyConverter: Converter<ResponseBody, S>,
+    private val successBodyConverter: Converter<ResponseBody, S>,
     private val errorBodyConverter: Converter<ResponseBody, E>
 ) : CallAdapter<S, ResourceFlow<S, E>> {
     override fun responseType(): Type = successType
@@ -40,8 +43,15 @@ internal class ResourceFlowCallAdapter<S, E>(
     override fun adapt(call: Call<S>): ResourceFlow<S, E> = flow {
         emit(
             try {
-                val response = call.execute()
-                response.asResource<S, E>(emptyBodyConverter, errorBodyConverter)
+                val retroMock = annotations.mock()
+                val response = if (retroMock != null
+                                    && retroMock.mode != MockMode.NONE
+                                    && RetroFlow.isMockEnabled) {
+                    executeMock(retroMock, successType)
+                } else {
+                    call.execute()
+                }
+                response.asResource(successBodyConverter, errorBodyConverter)
             } catch (e: Throwable) {
                 Resource.Failure.Exception(e) as Resource<S, E>
             }

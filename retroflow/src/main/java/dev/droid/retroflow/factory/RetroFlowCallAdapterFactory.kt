@@ -54,13 +54,13 @@ class RetroFlowCallAdapterFactory private constructor(): CallAdapter.Factory() {
         val flowType = getParameterUpperBound(0, returnType as ParameterizedType)
         return if (getRawType(flowType) == Resource::class.java) {
             val (successType, errorType) = (flowType as ParameterizedType).bodyTypes()
-            val emptyBodyConverter = retrofit.responseBodyConverter<Any>(successType, annotations)
+            val successBodyConverter = retrofit.responseBodyConverter<Any>(successType, annotations)
             val errorBodyConverter = retrofit.responseBodyConverter<Any>(errorType, annotations)
             ResourceFlowCallAdapter<Any, Any>(successType, annotations,
-                emptyBodyConverter, errorBodyConverter)
+                successBodyConverter, errorBodyConverter)
         } else {
-            val emptyBodyConverter = retrofit.responseBodyConverter<Any>(flowType, annotations)
-            FlowCallAdapter<Any>(flowType, annotations, emptyBodyConverter)
+            val successBodyConverter = retrofit.responseBodyConverter<Any>(flowType, annotations)
+            FlowCallAdapter<Any>(flowType, annotations, successBodyConverter)
         }
     }
 

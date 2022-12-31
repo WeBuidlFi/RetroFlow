@@ -20,21 +20,20 @@ import dev.droid.retroflow.RetroFlow
 import dev.droid.retroflow.utils.RetroDispatcher
 import dev.droid.retroflow.utils.dispatcher
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.Executors
 
 /**
- * Single-threaded [CoroutineDispatcher] to perform tasks on a single thread (i.e. synchronously).
+ * Single-threaded [CoroutineDispatcher] to perform tasks synchronously on a single thread.
  */
-val Dispatchers.SINGLE: CoroutineDispatcher
+val SINGLE: CoroutineDispatcher
     get() = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
 /**
- * [flowOn] is an overloaded extension function to apply the proper dispatcher extracted from
- * [RetroDispatcher] or [RetroFlow.dispatcher].
+ * [flowOn] is an overloaded extension function to switch the context of execution to the dispatcher
+ * extracted from [RetroDispatcher] or provided to [RetroFlow] with [RetroFlow.dispatcher] function.
  */
 internal fun <T> Flow<T>.flowOn(retroDispatcher: RetroDispatcher?): Flow<T> = apply {
     retroDispatcher?.dispatcher?.let { flowOn(it) }

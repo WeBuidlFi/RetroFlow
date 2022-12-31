@@ -1,0 +1,28 @@
+{
+  "success": {
+    "code": 200,
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "body": {
+      "id": 1,
+      "name": "John Doe",
+      "age": 29
+    }
+  },
+  "error": {
+    "code": 404,
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "body": {
+      "error": "No user found with id = 1"
+    }
+  }
+}
