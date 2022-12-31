@@ -48,6 +48,10 @@ annotation class Dispatcher(val retroDispatcher: RetroDispatcher)
  * empty for [source] = [MockSource.ASSET].
  * @param mockResId: The resource id of the mock file which is present in the 'res/raw' directory.
  * This must not be 0 for [source] = [MockSource.RESOURCE].
+ *
+ * See below examples for mock json format/specification:
+ * [getUsers.json](https://bit.ly/getUsers_json)
+ * [getUserById.json](https://bit.ly/getUserById_json)
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

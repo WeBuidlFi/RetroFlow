@@ -21,6 +21,10 @@ package dev.droid.retroflow.mock
  *
  * @property success: Representation of the 'success' node in the mock json file.
  * @property error: Representation of the 'error' node in the mock json file.
+ *
+ * See below examples for mock json format/specification:
+ * [getUsers.json](https://bit.ly/getUsers_json)
+ * [getUserById.json](https://bit.ly/getUserById_json)
  */
 data class RetroMockResponse<S, E>(
     val success: MockResponse<S>,
@@ -33,6 +37,10 @@ data class RetroMockResponse<S, E>(
  * @property code: The status code to be set for the mock response
  * @property headers: The Headers to be set for the mock response
  * @property body: The body of type [T] to be set for the mock response
+ *
+ * See below examples for mock json format/specification:
+ * [getUsers.json](https://bit.ly/getUsers_json)
+ * [getUserById.json](https://bit.ly/getUserById_json)
  */
 data class MockResponse<T>(
     val code: Int,
@@ -45,6 +53,10 @@ data class MockResponse<T>(
  *
  * @property name: Header name/key
  * @property value: Header value
+ *
+ * See below examples for mock json format/specification:
+ * [getUsers.json](https://bit.ly/getUsers_json)
+ * [getUserById.json](https://bit.ly/getUserById_json)
  */
 data class MockHeader(
     val name: String,
