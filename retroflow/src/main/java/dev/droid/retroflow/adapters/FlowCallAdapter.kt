@@ -19,9 +19,9 @@ package dev.droid.retroflow.adapters
 import dev.droid.retroflow.RetroFlow
 import dev.droid.retroflow.extensions.*
 import dev.droid.retroflow.extensions.dispatcher
-import dev.droid.retroflow.extensions.executeMock
 import dev.droid.retroflow.extensions.flowOn
 import dev.droid.retroflow.mock.MockMode
+import dev.droid.retroflow.mock.mock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody
@@ -46,7 +46,7 @@ internal class FlowCallAdapter<T>(
                 val response = if (retroMock != null
                                     && retroMock.mode != MockMode.NONE
                                     && RetroFlow.isMockEnabled) {
-                    executeMock(retroMock, responseType)
+                    retroMock.mock(responseType)
                 } else {
                     call.execute()
                 }

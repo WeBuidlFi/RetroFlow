@@ -22,6 +22,7 @@ import dev.droid.retroflow.extensions.dispatcher
 import dev.droid.retroflow.extensions.flowOn
 import dev.droid.retroflow.extensions.mock
 import dev.droid.retroflow.mock.MockMode
+import dev.droid.retroflow.mock.mock
 import dev.droid.retroflow.resource.Resource
 import dev.droid.retroflow.resource.ResourceFlow
 import kotlinx.coroutines.flow.flow
@@ -47,7 +48,7 @@ internal class ResourceFlowCallAdapter<S, E>(
                 val response = if (retroMock != null
                                     && retroMock.mode != MockMode.NONE
                                     && RetroFlow.isMockEnabled) {
-                    executeMock(retroMock, successType)
+                    retroMock.mock(successType)
                 } else {
                     call.execute()
                 }

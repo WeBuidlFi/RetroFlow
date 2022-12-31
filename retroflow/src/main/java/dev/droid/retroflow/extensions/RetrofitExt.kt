@@ -16,13 +16,6 @@
 
 package dev.droid.retroflow.extensions
 
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import dev.droid.retroflow.RetroFlow
-import dev.droid.retroflow.annotations.RetroMock
-import dev.droid.retroflow.mock.MockHeader
-import dev.droid.retroflow.mock.MockMode
 import dev.droid.retroflow.resource.Resource
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
@@ -30,7 +23,6 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Converter
 import retrofit2.Response
 import java.io.IOException
-import java.lang.reflect.Type
 
 /**
  * Helper function to preserve the response body string value. The drawback of using
@@ -96,62 +88,3 @@ fun <S, E> Response<S>.asResource(
 } catch (e: Throwable) {
     Resource.Failure.Exception(e)
 } as Resource<S, E>
-
-/**
- * Helper function to return mock response.
- *
- * @param retroMock: The [RetroMock] annotation instance
- * @param responseType: The successful response data type
- *
- * @return Retrofit [Response] with mock data.
- */
-internal fun <T> executeMock(
-    retroMock: RetroMock,
-    responseType: Type
-): Response<T> {
-    val context = RetroFlow.context
-    checkNotNull(context) {
-        "Context must be provided to enable mock!"
-    }
-
-    val mockJson = context.readMockJson(retroMock)
-    val gson = Gson()
-
-    return if (retroMock.mode == MockMode.SUCCESS) {
-        val success = mockJson.get("success").asJsonObject
-        Response.success(
-            gson.fromJson<T>(success.get("body"), responseType),
-            success.asOkHttpResponse(gson)
-        )
-    } else {
-        val error = mockJson.get("error").asJsonObject
-        Response.error(
-            error.get("body").asResponseBody(),
-            error.asOkHttpResponse(gson)
-        )
-    }
-}
-
-/**
- * Helper function to convert the success and error json elements from the mock json file to an
- * instance of [okhttp3.Response].
- */
-private fun JsonObject.asOkHttpResponse(gson: Gson): okhttp3.Response {
-    return okhttp3.Response.Builder()
-        .code(get("code").asInt)
-        .apply {
-            gson.fromJson(get("headers"), listOf<MockHeader>().javaClass).forEach {
-                addHeader(it.name, it.value)
-            }
-        }
-        .body(get("body").asResponseBody())
-        .build()
-}
-
-/**
- * Helper function to convert the 'success.body' or 'error.body' elements from the mock json
- * file to [ResponseBody].
- */
-private fun JsonElement.asResponseBody(): ResponseBody {
-    return asString.toResponseBody("application/json".toMediaType())
-}

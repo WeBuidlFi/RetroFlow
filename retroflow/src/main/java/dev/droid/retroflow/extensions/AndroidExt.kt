@@ -19,17 +19,34 @@ package dev.droid.retroflow.extensions
 import android.content.Context
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import dev.droid.retroflow.annotations.RetroMock
-import dev.droid.retroflow.mock.MockSource
+import java.io.InputStream
 
-internal fun Context.readMockJson(retroMock: RetroMock): JsonObject {
-    val inputStream = if (retroMock.source == MockSource.ASSET) {
-        assets.open(retroMock.mockAssetPath)
-    } else {
-        resources.openRawResource(retroMock.mockResId)
-    }
-    val mockJsonString = inputStream.bufferedReader().use { it.readText() }
-    val mockJsonObject = JsonParser.parseString(mockJsonString).asJsonObject
-    inputStream.close()
-    return mockJsonObject
+/**
+ * Helper function to read json file from the assets folder and return as [JsonObject].
+ *
+ * @param path: Relative json file path in the assets folder
+ *
+ * @return [JsonObject]
+ */
+fun Context.readJson(path: String): JsonObject {
+    return assets.open(path).use { it.asJsonObject() }
+}
+
+/**
+ * Helper function to read json file from the res/raw directory and return as [JsonObject].
+ *
+ * @param resId: Resource id of the json file in res/raw directory
+ *
+ * @return [JsonObject]
+ */
+fun Context.readJson(resId: Int): JsonObject {
+    return resources.openRawResource(resId).use { it.asJsonObject() }
+}
+
+/**
+ * Helper function to convert the [InputStream] as a [JsonObject].
+ */
+fun InputStream.asJsonObject(): JsonObject {
+    val jsonString = bufferedReader().use { it.readText() }
+    return JsonParser.parseString(jsonString).asJsonObject
 }
