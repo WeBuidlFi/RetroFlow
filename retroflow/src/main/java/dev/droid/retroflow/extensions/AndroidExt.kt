@@ -24,12 +24,12 @@ import java.io.InputStream
 /**
  * Helper function to read json file from the assets folder and return as [JsonObject].
  *
- * @param path: Relative json file path in the assets folder
+ * @param assetPath: Relative json file path in the assets folder
  *
  * @return [JsonObject]
  */
-fun Context.readJson(path: String): JsonObject {
-    return assets.open(path).use { it.asJsonObject() }
+fun Context.readJson(assetPath: String): JsonObject {
+    return assets.open(assetPath).use { it.asJsonObject() }
 }
 
 /**

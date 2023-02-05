@@ -57,7 +57,7 @@ fun <T> Response<T>.successBody(converter: Converter<ResponseBody, T>): T {
  * @param converter: [Converter] to convert [Response.errorBody] to type [E]
  * @return [E]?: Converted error body.
  */
-fun <S, E> Response<S>.errorBody(converter: Converter<ResponseBody, E>): E? {
+fun <E> Response<*>.errorBody(converter: Converter<ResponseBody, E>): E? {
     val errorBody = errorBody()
     return when {
         errorBody == null || errorBody.contentLength() == 0L -> null

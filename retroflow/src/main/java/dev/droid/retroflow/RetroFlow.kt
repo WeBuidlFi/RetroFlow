@@ -21,6 +21,9 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.content.res.Resources
 import dev.droid.retroflow.factory.RetroFlowCallAdapterFactory
+import dev.droid.retroflow.resource.ResourceOperator
+import dev.droid.retroflow.resource.Resource
+import dev.droid.retroflow.annotations.Dispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -39,17 +42,21 @@ object RetroFlow {
         private set
     internal var context: Context? = null
         private set
+    internal var operators: List<ResourceOperator<Any, Any>> = mutableListOf()
+        private set
 
     /**
      * Provide the context of [Flow] execution for all service calls. By default RetroFlow will use
      * the [Dispatchers.IO] dispatcher.
-     * Provide 'null' if RetroFlow does not have to switch the context of execution. It's the
-     * responsibility of the caller to handle the context of [Flow] execution using the [flowOn]
-     * operator while making the service call. If the context of execution is not switched then
-     * the calls will be executed on the current thread which may lead to
-     * [android.os.NetworkOnMainThreadException] and crash the application.
+     * Provide 'null' if you don't want RetroFlow to handle the switching of the context of execution.
+     * Then it becomes the responsibility of the caller to handle the context of [Flow] execution
+     * using the [flowOn] operator while making the service call, or by using the [Dispatcher]
+     * annotation on the method of the api service interface. If the context of execution is not
+     * switched then the calls will be executed on the current thread which may be the Android main
+     * thread and if so, it may lead to [android.os.NetworkOnMainThreadException] and crash the
+     * application.
      *
-     * @param dispatcher: Your [CoroutineDispatcher] implementation
+     * @param dispatcher: The [CoroutineDispatcher] you want to use for [Flow] execution context
      *
      * @return [RetroFlow]
      */
@@ -70,6 +77,17 @@ object RetroFlow {
     fun mock(enable: Boolean, context: Context): RetroFlow {
         isMockEnabled = enable
         this.context = context
+        return this
+    }
+
+    /**
+     * Use this function to apply a list of global operators on the [Resource] object for each
+     * [Flow]<[Resource]> call execution.
+     *
+     * @param operators: List of [ResourceOperator]s to apply on the [Resource] object.
+     */
+    fun globalOperators(operators: List<ResourceOperator<Any, Any>>): RetroFlow {
+        this.operators = operators
         return this
     }
 }

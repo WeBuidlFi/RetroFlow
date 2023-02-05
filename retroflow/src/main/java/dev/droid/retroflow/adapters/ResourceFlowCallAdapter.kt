@@ -18,14 +18,13 @@ package dev.droid.retroflow.adapters
 
 import dev.droid.retroflow.RetroFlow
 import dev.droid.retroflow.extensions.*
-import dev.droid.retroflow.extensions.dispatcher
-import dev.droid.retroflow.extensions.flowOn
-import dev.droid.retroflow.extensions.mock
 import dev.droid.retroflow.mock.MockMode
 import dev.droid.retroflow.mock.mock
 import dev.droid.retroflow.resource.Resource
 import dev.droid.retroflow.resource.ResourceFlow
+import dev.droid.retroflow.resource.operators
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -48,7 +47,7 @@ internal class ResourceFlowCallAdapter<S, E>(
                 val response = if (retroMock != null
                                     && retroMock.mode != MockMode.NONE
                                     && RetroFlow.isMockEnabled) {
-                    retroMock.mock(successType)
+                    retroMock.mock<S, E>(successType, call.request())
                 } else {
                     call.execute()
                 }
@@ -58,4 +57,8 @@ internal class ResourceFlowCallAdapter<S, E>(
             }
         )
     }.flowOn(annotations.dispatcher()?.retroDispatcher)
+        .map {
+            (it as Resource<Any, Any>).operators(RetroFlow.operators)
+            it
+        }
 }

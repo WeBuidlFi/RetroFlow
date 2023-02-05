@@ -17,7 +17,7 @@
 package dev.droid.retroflow.mock
 
 /**
- * Wrapper class for the mock response.
+ * Wrapper class for the success & error mock responses.
  *
  * @property success: Representation of the 'success' node in the mock json file.
  * @property error: Representation of the 'error' node in the mock json file.
@@ -26,13 +26,13 @@ package dev.droid.retroflow.mock
  * [getUsers.json](https://bit.ly/getUsers_json)
  * [getUserById.json](https://bit.ly/getUserById_json)
  */
-data class RetroMockResponse<S, E>(
+data class MockEnvelope<S, E>(
     val success: MockResponse<S>,
     val error: MockResponse<E>
 )
 
 /**
- * Representation of the 'success' or 'error' nodes in the mock json file.
+ * Representation of the success/error nodes in the mock json file.
  *
  * @property code: The status code to be set for the mock response
  * @property headers: The Headers to be set for the mock response

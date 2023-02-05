@@ -46,7 +46,7 @@ internal class FlowCallAdapter<T>(
                 val response = if (retroMock != null
                                     && retroMock.mode != MockMode.NONE
                                     && RetroFlow.isMockEnabled) {
-                    retroMock.mock(responseType)
+                    retroMock.mock<T, Nothing>(responseType, call.request())
                 } else {
                     call.execute()
                 }

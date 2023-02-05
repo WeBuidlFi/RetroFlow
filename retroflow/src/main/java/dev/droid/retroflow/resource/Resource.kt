@@ -299,17 +299,28 @@ inline fun <S, E> Resource<S, E>.onResult(
 }
 
 /**
- * A scope function to handle the [Resource] outcomes (i.e [Resource.Success],
+ * A scope function to operate on the [Resource] outcomes (i.e [Resource.Success],
  * [Resource.Failure.Error], and [Resource.Failure.Exception]) by providing a [ResourceOperator]
  *
  * @param operator: The [ResourceOperator] implementation to handle [Resource] outcomes.
  */
-fun <S, E> Resource<S, E>.operate(operator: ResourceOperator<S, E>) {
+fun <S, E> Resource<S, E>.operator(operator: ResourceOperator<S, E>) {
     when (this) {
         is Success -> operator.onSuccess(this)
         is Failure.Error -> operator.onError(this)
         is Failure.Exception -> operator.onException(this)
     }
+}
+
+/**
+ * A scope function to operate on the [Resource] outcomes (i.e [Resource.Success],
+ * [Resource.Failure.Error], and [Resource.Failure.Exception]) by providing a list of
+ * [ResourceOperator]s.
+ *
+ * @param operators: The list of [ResourceOperator]s to operate on the [Resource] outcomes.
+ */
+internal fun Resource<Any, Any>.operators(operators: List<ResourceOperator<Any, Any>>) {
+    operators.forEach { operator(it) }
 }
 
 /**

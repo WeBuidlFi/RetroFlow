@@ -24,7 +24,9 @@ import dev.droid.retroflow.annotations.RetroMock
  *
  * [ASSET]: Assets folder as the source of the mock json file
  * [RESOURCE]: res/raw directory as the source of the mock json file
+ * [TAG]: Service method parameter of type [MockEnvelope], annotated with [retrofit2.http.Tag], is
+ * provided as the mock.
  */
 enum class MockSource {
-    ASSET, RESOURCE
+    ASSET, RESOURCE, TAG
 }
